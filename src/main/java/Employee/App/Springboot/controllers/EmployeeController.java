@@ -4,6 +4,7 @@ import Employee.App.Springboot.dto.EmployeeDto;
 import Employee.App.Springboot.entities.EmployeeEntity;
 import Employee.App.Springboot.repository.EmployeeRepository;
 import Employee.App.Springboot.services.EmployeeService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -34,4 +35,15 @@ public class EmployeeController {
     public EmployeeDto createNewEmployee(@RequestBody EmployeeDto inputEmployee) {
         return employeeService.createNewEmployee(inputEmployee);
     }
+
+    @PutMapping(path = "/{employeeId}")
+    public EmployeeDto updateEmployeeById(@RequestBody EmployeeDto employeeDto, @PathVariable Long employeeId) {
+        return employeeService.updateEmployeeById(employeeId , employeeDto);
+    }
+
+    @DeleteMapping(path = "/{employeeId}")
+    public void deleteEmployeeById(@PathVariable Long employeeId) {
+        employeeService.deleteEmployeeById(employeeId);
+    }
 }
+
