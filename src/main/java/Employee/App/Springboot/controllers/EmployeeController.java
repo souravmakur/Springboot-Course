@@ -1,17 +1,18 @@
 package Employee.App.Springboot.controllers;
 
 import Employee.App.Springboot.dto.EmployeeDto;
-import Employee.App.Springboot.entities.EmployeeEntity;
-import Employee.App.Springboot.repository.EmployeeRepository;
 import Employee.App.Springboot.services.EmployeeService;
-import org.springframework.data.repository.query.Param;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping(path ="/employees")
+@RequestMapping(path = "/employees")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -20,30 +21,43 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
-
     @GetMapping(path = "/{employeeId}")
-    public EmployeeDto getEmployeeById(@PathVariable(name = "employeeId") Long id) {
-        return employeeService.getEmployeeById(id);
+    public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable(name = "employeeId") Long id) {
+        Optional<EmployeeDto> employeeDto = employeeService.getEmployeeById(id);
+        return employeeDto
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
     @GetMapping
-    public List<EmployeeDto> getAllEmployees(@RequestParam(required = false , name = "inputAge") Integer age,
-                                                @RequestParam(required = false) String sortBy){
-        return employeeService.getAllEmployees();
+    public ResponseEntity<List<EmployeeDto>> getAllEmployees() {
+        return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
     @PostMapping
-    public EmployeeDto createNewEmployee(@RequestBody EmployeeDto inputEmployee) {
-        return employeeService.createNewEmployee(inputEmployee);
+    public ResponseEntity<EmployeeDto> createNewEmployee(@RequestBody @Valid EmployeeDto inputEmployee) {
+        EmployeeDto savedEmployee = employeeService.createNewEmployee(inputEmployee);
+        return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{employeeId}")
-    public EmployeeDto updateEmployeeById(@RequestBody EmployeeDto employeeDto, @PathVariable Long employeeId) {
-        return employeeService.updateEmployeeById(employeeId , employeeDto);
+    public ResponseEntity<EmployeeDto> updateEmployeeById(@RequestBody @Valid EmployeeDto employeeDto,
+                                                          @PathVariable Long employeeId) {
+        return ResponseEntity.ok(employeeService.updateEmployeeById(employeeId, employeeDto));
     }
 
     @DeleteMapping(path = "/{employeeId}")
-    public void deleteEmployeeById(@PathVariable Long employeeId) {
-        employeeService.deleteEmployeeById(employeeId);
+    public ResponseEntity<Boolean> deleteEmployeeById(@PathVariable Long employeeId) {
+        boolean gotDeleted = employeeService.deleteEmployeeById(employeeId);
+        if (gotDeleted) return ResponseEntity.ok(true);
+        return ResponseEntity.notFound().build();
+    }
+
+    @PatchMapping(path = "/{employeeId}")
+    public ResponseEntity<EmployeeDto> updatePartialEmployeeById(@RequestBody Map<String, Object> updates,
+                                                                 @PathVariable Long employeeId) {
+        EmployeeDto employeeDto = employeeService.updatePartialEmployeeById(employeeId, updates);
+        if (employeeDto == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(employeeDto);
     }
 }
-

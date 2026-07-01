@@ -1,73 +1,49 @@
 package Employee.App.Springboot.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class EmployeeDto {
+
     private Long id;
-    private String Name;
-    private String Email;
-    private Integer Age;
-    private LocalDate DateOfJoining;
-    private Boolean IsActive;
 
-    public EmployeeDto() {
+    @NotBlank(message = "Name of the employee cannot be blank")
+    @Size(min = 3, max = 10, message = "Number of characters in name should be in the range: [3, 10]")
+    private String name;
 
-    }
+    @NotBlank(message = "Email of the employee cannot be blank")
+    @Email(message = "Email should be a valid email")
+    private String email;
 
-    public EmployeeDto(Long id, Boolean isActive, Integer age, LocalDate dateOfJoining, String email, String name) {
-        this.id = id;
-        IsActive = isActive;
-        Age = age;
-        DateOfJoining = dateOfJoining;
-        Email = email;
-        Name = name;
-    }
+    @NotNull(message = "Age of the employee cannot be blank")
+    @Max(value = 80, message = "Age of Employee cannot be greater than 80")
+    @Min(value = 18, message = "Age of Employee cannot be less than 18")
+    private Integer age;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @NotBlank(message = "Role of the employee cannot be blank")
+    private String role;
 
-    public void setActive(Boolean active) {
-        IsActive = active;
-    }
+    @NotNull(message = "Salary of Employee should be not null")
+    @Positive(message = "Salary of Employee should be positive")
+    @Digits(integer = 6, fraction = 2, message = "The salary can be in the form XXXXX.YY")
+    @DecimalMax(value = "100000.99")
+    @DecimalMin(value = "100.50")
+    private Double salary;
 
-    public void setDateOfJoining(LocalDate dateOfJoining) {
-        DateOfJoining = dateOfJoining;
-    }
+    @PastOrPresent(message = "DateOfJoining field in Employee cannot be in the future")
+    private LocalDate dateOfJoining;
 
-    public void setAge(Integer age) {
-        Age = age;
-    }
-
-    public void setEmail(String email) {
-        Email = email;
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
-
-    public String getName() {
-        return Name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return Email;
-    }
-
-    public Integer getAge() {
-        return Age;
-    }
-
-    public LocalDate getDateOfJoining() {
-        return DateOfJoining;
-    }
-
-    public Boolean getActive() {
-        return IsActive;
-    }
+    @AssertTrue(message = "Employee should be active")
+    @JsonProperty("isActive")
+    private Boolean isActive;
 }

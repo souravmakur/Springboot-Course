@@ -1,27 +1,29 @@
 package Employee.App.Springboot.entities;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Entity //ths will tell the hibernate that this class is what you need to convert it into a db
+@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "employees")
 public class EmployeeEntity {
-    @Id //this will automatically generate an id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String Name;
-    private String Email;
-    private Integer Age;
-    private LocalDate DateOfJoining;
-    private Boolean IsActive;
+    private String name;
+    private String email;
+    private Integer age;
+    private LocalDate dateOfJoining;
 
-
+    @JsonProperty("isActive")
+    private Boolean isActive;
+    private String role;
+    private Double salary;
 }
